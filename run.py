@@ -36,7 +36,7 @@ Xaxis = True
 Yaxis = True
 Xcon = 80
 Ycon = 80
-Step = 5
+Step = 3
 
 console = Console()
 
@@ -82,5 +82,3 @@ while True:
 		exit()
 	func = eval("lambda x: " + cere)
 	draw(func, Step)
-
-turtle.exitonclick()
