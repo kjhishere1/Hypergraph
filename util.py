@@ -47,7 +47,6 @@ def pip_install(modules):
 
 pip_install('rich')
 from rich import box
-from rich.progress import track
 from rich.table import Table
 
 def makeTable(col: list, row: list):

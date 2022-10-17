@@ -1,11 +1,11 @@
 import os
 import turtle
 
-from rich.console import Console
-
 import util
-from hypergraph import Hypergraph as HG
 
+from rich.console import Console
+from rich.progress import track
+from hypergraph import Hypergraph as HG
 
 width, height = 512, 512
 Origin = True
