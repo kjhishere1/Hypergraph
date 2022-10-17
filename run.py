@@ -26,7 +26,7 @@ c.print(
 c.print('Shift + D를 눌러서 나가기', style="bold red")
 
 
-def draw(func, step):
+def draw(hg, func, step):
 	hg.step = step
 	hg.function = func
 	gr = iter(hg._drawFunc())
@@ -48,4 +48,4 @@ while True:
 	if cere == '':
 		exit()
 	func = eval("lambda x: " + cere)
-	draw(func, Step)
+	draw(hg, func, Step)
