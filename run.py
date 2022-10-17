@@ -16,7 +16,7 @@ Ycon = 80
 Step = 3
 
 c = Console()
-c.print(util.logo, justify="center")
+c.print(util.logo_c, justify="center")
 c.print(
 	util.makeTable(
 		["평면 크기", "원점", "X축", "Y축", "X축 눈금", "Y축 눈금", "X값 증가량"],
