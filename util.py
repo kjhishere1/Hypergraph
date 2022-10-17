@@ -2,10 +2,6 @@ import os
 import pip
 from importlib.util import find_spec
 
-from rich import box
-from rich.progress import track
-from rich.table import Table
-
 logo = r"""
  /$$   /$$                                                                                /$$      
 | $$  | $$                                                                               | $$      
@@ -33,6 +29,11 @@ def pip_install(modules):
     if ins != []:
         pip.main(['install', *ins])
         os.system('cls')
+
+pip_install('rich')
+from rich import box
+from rich.progress import track
+from rich.table import Table
 
 def makeTable(col: list, row: list):
     table = Table(show_header=True, header_style="bold")
