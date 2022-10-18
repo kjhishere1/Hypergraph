@@ -1,5 +1,6 @@
 import os
 import pip
+import json
 from importlib.util import find_spec
 
 logo = r"""
@@ -56,3 +57,25 @@ def makeTable(col: list, row: list):
         table.add_column(text, justify="center", width=12)
     table.add_row(*row)
     return table
+
+def TypeCheck(value: str, type_type):
+    typed = ast.literal_eval(value)
+    return type(typed) == type_type
+
+def GetCfgPath(cfg_path):
+    PATH = os.path.join(os.getenv('APPDATA'), cfg_path)
+    CFG = os.path.join(PATH, r"config.json")
+    if os.path.exists(PATH):
+        return CFG
+    else:
+        os.mkdir(PATH)
+        with open(CFG, 'w', encoding="UTF-8") as file:
+            file.write('{}')
+        return CFG
+
+def CfgChecker():
+    with open(GetCfgPath('hypergraph'), 'r', encoding="UTF-8") as file:
+        cfg = file.read()
+        cfg = json.loads(cfg)
+    for key, value in enumerate(cfg):
+        ...
