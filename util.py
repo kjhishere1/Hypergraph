@@ -34,17 +34,12 @@ def makeTable(col: list, row: list):
     return table
 
 
-def draw(hg, func, step):
-	hg.step = step
-	hg.function = func
-	gr = iter(hg._drawFunc())
-	for _ in track(hg.xList):
-		next(gr)
-
-
 def TypeCheck(value: str, type_type):
-    typed = ast.literal_eval(str(value))
-    return type(typed) == type_type
+    try:
+        typed = ast.literal_eval(str(value))
+        return type(typed) == type_type
+    except Exception:
+        return False
 
 
 def GetCfgPath(cfg_path):
@@ -66,7 +61,7 @@ def CfgChecker(cfg_path):
 
     for key in cfg.keys():
         value = cfg[key]
-        if len(cfg.keys()) == 7:
+        if len(cfg.keys()) != 7:
             raise ValueError("설정 파일의 값에 문제가 생겼습니다.")
 
         if key == "size":
@@ -91,35 +86,62 @@ def CfgChecker(cfg_path):
 
 def GenCfg(cfg_path):
     if (width := input('좌표평면의 가로 크기를 적어주세요.\n(기본값: 512) >: ')) == '':
+        print("기본값으로 설정합니다.")
         width = 512
     if (height := input('좌표평면의 세로 크기를 적어주세요.\n(기본값: 512) >: ')) == '':
+        print("기본값으로 설정합니다.")
         height = 512
-    if (origin := input('좌표평면에서 원점을 표시 할까요? (Y/N)\n(기본값: Y) >: ')) == '':
-        origin = True
-    if (xaxis := input('좌표평면에서 X축을 표시 할까요? (Y/N)\n(기본값: Y) >: ')) == '':
-        xaxis = True
-    if (yaxis := input('좌표평면에서 Y축을 표시 할까요? (Y/N)\n(기본값: Y) >: ')) == '':
-        yaxis = True
-    if (xcon := input('좌표평면에서 X축 눈금을 표시 할까요? (Y/N)\n(기본값: Y) >: ')) == '':
-        xcon = True
-    if (ycon := input('좌표평면에서 Y축 눈금을 표시 할까요? (Y/N)\n(기본값: Y) >: ')) == '':
-        ycon = True
-    if (step := input('X의 정의역을 몇의 배수로 설정하시겠습니까?\n(기본값: 3) >: ')) == '':
+    if (origin := input('좌표평면에서 원점을 표시 할까요? (Y를 눌러 확인)\n(기본값: Y) >: ')) == '':
+        print("기본값으로 설정합니다.")
+        origin = 'Y'
+    if (xaxis := input('좌표평면에서 X축을 표시 할까요? (Y를 눌러 확인)\n(기본값: Y) >: ')) == '':
+        print("기본값으로 설정합니다.")
+        xaxis = 'Y'
+    if (yaxis := input('좌표평면에서 Y축을 표시 할까요? (Y를 눌러 확인)\n(기본값: Y) >: ')) == '':
+        print("기본값으로 설정합니다.")
+        yaxis = 'Y'
+    if (xcon := input('좌표평면에서 X축 눈금의 단위는? (Y를 눌러 확인)\n(기본값: 200) >: ')) == '':
+        print("기본값으로 설정합니다.")
+        xcon = 200
+    if (ycon := input('좌표평면에서 Y축 눈금의 단위는? (Y를 눌러 확인)\n(기본값: 200) >: ')) == '':
+        print("기본값으로 설정합니다.")
+        ycon = 200
+    if (step := input('X의 정의역을 몇의 배수로 설정 하시겠습니까?\n(기본값: 3) >: ')) == '':
+        print("기본값으로 설정합니다.")
         step = 3
 
     cfg = {}
-    cfg["size"] = {"width": width, "height": height}
-    cfg["origin"] = origin
-    cfg["xaxis"] = xaxis
-    cfg["yaxis"] = yaxis
-    cfg["xcon"] = xcon
-    cfg["ycon"] = ycon
-    cfg["step"] = step
+    cfg["size"] = {
+        "width": width if TypeCheck(width, int) else 512,
+        "height": height if TypeCheck(height, int) else 512
+    }
+    cfg["origin"] = True if origin == 'Y' else False
+    cfg["xaxis"] = True if xaxis == 'Y' else False
+    cfg["yaxis"] = True if yaxis == 'Y' else False
 
-    cfg = json.joins(cfg)
+    if TypeCheck(xcon, int):
+        if int(xcon) >= 0:
+            cfg["xcon"] = int(xcon)
+        else:
+            cfg["xcon"] = 200
+    else:
+        cfg["xcon"] = 200
 
-    with open(GetCfgPath(cfg_path, 'w', encoding="UTF-8")) as file:
+    if TypeCheck(ycon, int):
+        if int(ycon) >= 0:
+            cfg["ycon"] = int(ycon)
+        else:
+            cfg["ycon"] = 200
+    else:
+        cfg["ycon"] = 200
+
+    cfg["step"] = step if TypeCheck(step, int) else 3
+
+    cfg = json.dumps(cfg)
+
+    with open(GetCfgPath(cfg_path), 'w', encoding="UTF-8") as file:
         file.write(cfg)
+    print('설정을 저장했습니다.')
 
 logo = f"\n /$$   /$${' '*80}/$$\n| $$  | $${' '*79}| $$\n| $$  | $$ /$$   /$$  /$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$  /$$$$$$   /$$$$$$ | $$$$$$$\n| $$$$$$$$| $$  | $$ /$$__  $$ /$$__  $$ /$$__  $$ /$$__  $$ /$$__  $$|____  $$ /$$__  $$| $$__  $$\n| $$__  $$| $$  | $$| $$  \ $$| $$$$$$$$| $$  \__/| $$  \ $$| $$  \__/ /$$$$$$$| $$  \ $$| $$  \ $$\n| $$  | $$| $$  | $$| $$  | $$| $$_____/| $$      | $$  | $$| $$      /$$__  $$| $$  | $$| $$  | $$\n| $$  | $$|  $$$$$$$| $$$$$$$/|  $$$$$$$| $$      |  $$$$$$$| $$     |  $$$$$$$| $$$$$$$/| $$  | $$\n|__/  |__/ \____  $$| $$____/  \_______/|__/       \____  $$|__/      \_______/| $$____/ |__/  |__/\n{' '*11}/$$  | $$| $${' '*27}/$$  \ $${' '*19}| $$\n{' '*10}|  $$$$$$/| $${' '*26}|  $$$$$$/{' '*19}| $$\n{' '*11}\______/ |__/{' '*27}\______/{' '*20}|__/"
 logo_c = '\n'.join([*logo.split('\n')[:3], *[" "*5 + l for l in logo.split('\n')[3:9]], *[i.lstrip() for i in logo.split('\n')[9:]]])
@@ -131,4 +153,4 @@ env = {
     "__file__": None,
     "__builtins__": None
 }
-errorPrint = lambda msg, e: c.print(f'{msg} [red][b]{e}[/b][/red]')
+errorPrint = lambda c, msg, e: c.print(f'{msg} [red][b]{e}[/b][/red]')

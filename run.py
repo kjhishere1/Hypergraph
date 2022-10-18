@@ -12,11 +12,16 @@ while True:
 	try:
 		cfg_check = util.CfgChecker('hypergraph')
 		if cfg_check:
-			Recfg = input("설정을 초기화 하고 재설정 하시겠습니까? (Y/N)\n>: ")
+			Recfg = input("설정을 초기화 하고 재설정 하시겠습니까? (Y를 눌러 확인)\n>: ")
 			if Recfg == 'Y':
 				raise
+			else:
+				break
 	except Exception:
-		util.GenCfg()
+		util.GenCfg('hypergraph')
+
+with open(util.GetCfgPath('hypergraph'), 'r', encoding="UTF-8") as file:
+	cfg = json.loads(file.read())
 
 
 c = Console()
@@ -24,21 +29,37 @@ c.print(util.logo_c, justify="center")
 c.print(
 	util.makeTable(
 		["평면 크기", "원점", "X축", "Y축", "X축 눈금", "Y축 눈금", "X값 증가량"],
-		[f"{width}x{height}", "✅" if Origin else "❌", "✅" if Xaxis else "❌", "✅" if Yaxis else "❌", str(Xcon), str(Ycon), str(Step)]
+		[
+			f"{cfg['size']['width']}x{cfg['size']['height']}",
+			"✅" if cfg['origin'] else "❌",
+			"✅" if cfg['xaxis'] else "❌",
+			"✅" if cfg['yaxis'] else "❌",
+			str(cfg['xcon']),
+			str(cfg['ycon']),
+			str(cfg['step'])
+		]
 	)
 )
 c.print('Ctrl + D를 눌러서 나가기', style="bold red")
 
+def draw(func):
+	global hg
+	hg._move(hg.xMax, func(int(hg.xMax)))
+	for x in track(hg.xList):
+		y = func(x)
+		hg.turtle.goto(x, y)
+		yield x
 
-hg = HG(width, height, None, Step)
-if Origin:
+
+hg = HG(cfg['size']['width'], cfg['size']['height'], None, cfg['step'])
+if cfg['origin']:
 	hg.originMark()
-if Xaxis:
+if cfg['xaxis']:
 	hg.drawX()
-if Yaxis:
+if cfg['yaxis']:
 	hg.drawY()
-hg.contourX(Xcon)
-hg.contourY(Ycon)
+hg.contourX(cfg['xcon'])
+hg.contourY(cfg['ycon'])
 
 while True:
 	cere = input(">: f(x)=")
@@ -46,16 +67,20 @@ while True:
 		exit()
 	try:
 		func = eval("lambda x: " + cere, util.env)
-		util.draw(hg, func, Step)
+		if type(func(0)) == int:
+			for _ in draw(func): pass
+		else:
+			raise TypeError("함수의 값은 정수여야 합니다.")
 	except SyntaxError as e:
-		util.errorPrint('수식 문법 오류가 있습니다.', e)
+		util.errorPrint(c, '수식 문법 오류가 있습니다.', e)
 	except NameError as e:
-		util.errorPrint('정의 되지 않은 변수를 사용 했습니다.', e)
+		util.errorPrint(c, '정의되지 않은 변수입니다.', e)
 	except TypeError as e:
-		util.errorPrint('수식 문법 오류가 있습니다.', e)
+		util.errorPrint(c, '수식 타입 오류가 있습니다.', e)
 	except ZeroDivisionError as e:
-		util.errorPrint('분모가 0이 될 수 없습니다.', e)
+		util.errorPrint(c, '분모는 0이 될 수 없습니다.', e)
 	except OverflowError as e:
-		util.errorPrint('숫자 값이 너무 큽니다.', e)
+		util.errorPrint(c, '입력된 숫자가 너무 큽니다.', e)
 	except Exception as e:
-		util.errorPrint('알 수 없는 오류가 발생했습니다.', e)
+		util.errorPrint(c, '알 수 없는 오류가 발생했습니다.', e)
+		

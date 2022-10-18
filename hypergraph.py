@@ -48,6 +48,9 @@ class Hypergraph:
 		self.turtle.goto(0, self.yMin)
 
 	def contourX(self, grad):
+		if grad <= 0:
+			return None
+
 		self._move(0, 0)
 
 		goX = 0
@@ -69,6 +72,8 @@ class Hypergraph:
 			self.turtle.write(backX)
 
 	def contourY(self, grad):
+		if grad <= 0:
+			return None
 		self._move(0, 0)
 
 		goY = 0
@@ -101,7 +106,7 @@ class Hypergraph:
 		for x in self.xList:
 			y = self.function(x)
 			self.turtle.goto(x, y)
-			yield x, self.xList
+			yield x
 
 	def Graph(self):
 		for _, _ in self._drawFunc():
