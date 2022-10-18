@@ -1,5 +1,8 @@
 # Hypergraph
 
+<details>
+<summary>소개</summary>
+
 ## 1. Who
 부산동성고등학교 1학년 6반 김준형이 만듦.
 
@@ -26,11 +29,15 @@ Hypergraph는 Class를 이용하여 만들었고, 내부에 `_move` 함수나 `d
 파일은 `hypergraph.py`와 `run.py`로 총 두가지 파일로 쓰여져 있음.
 
 `hypergraph.py`는 좌표평면과 함수 그리기를 위한 코드를 모았고, 그 모아진 코드를 사용자가 이용하기 쉽게 기능을 추가한 것이 `run.py`임.
+</details>
 
 ## hypergraph.py
 `hypergraph.py`는 `turtle` 모듈만을 사용함.
 
 클래스 `Hypergraph`의 `__init__` 함수는 `Hypergraph` 클래스 내부에서 사용할 함수를 클래스가 정의될 때 선언함.
+
+<details>
+<summary>설명 접기/펼치기</summary>
 
 ### \_\_init\_\_ 함수
 **`self.function`** 은 클래스가 인자로 받은 함수를 함수 내에서 사용하기 위해서 설정함.
@@ -66,3 +73,47 @@ Y축을 그림.
 
 ### contourX 함수
 (0, 0)으로 이동 후, grad를 기준으로 눈금을 X축에 새김
+
+### contourY 함수
+(0, 0)으로 이동 후, grad를 기준으로 눈금을 Y축에 새김
+
+### _BetterRange 함수
+`start`에서 `stop`까지 `step` 만큼의 리스트를 줌. \
+`range`함수는 30에서 -30까지의 리스트가 작동하지 않음.
+
+### _drawFunc 함수
+입력 받았던 함수 식을 토대로 x 정의역의 수를 함수에 넣어서 `turtle`을 이동시킴.
+
+### Graph 함수
+`_drawFunc`을 멈추지 않고 이어서 그림.
+</details>
+
+## util.py
+`util.py`는 `run.py` 에서 사용되는 함수를 모은 모듈임.
+
+<details>
+<summary>설명 접기/펼치기</summary>
+
+### logo 변수
+HYPERGRAPH 글자를 ASCII 아트로 나타낸 것.
+
+### logo_c 변수
+HYPERGRAPH 글자를 ASCII 아트로 나타낸 것. \
+`rich`에서 사용하기 위해 수정됨.
+
+### pip_install 함수
+없는 모듈을 다운 받는다. 리스트로 넣을 시 여러 모듈을 한꺼번에 받는다. \
+`rich` 모듈을 사용하기 위해 만듦.
+
+### makeTable 함수
+설정을 보여주는 Table을 리턴한다. \
+`rich` 모듈을 사용하여 만듦.
+</details>
+
+## run.py
+`run.py`는 `hypergraph.py` 를 쉽게 사용하기 위해 만든 실행용 코드.
+
+<details>
+<summary>설명 접기/펼치기</summary>
+
+</details>
