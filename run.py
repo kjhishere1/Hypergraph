@@ -46,8 +46,14 @@ def draw(func):
 	global hg
 	hg._move(hg.xMax, func(int(hg.xMax)))
 	for x in track(hg.xList):
-		y = func(x)
-		hg.turtle.goto(x, y)
+		try:
+			y = func(x)
+		except ZeroDivisionError as e:
+			x = hg.xList[hg.xList.index(x) + 1]
+			y = func(x)
+			hg._move(x, y)
+		else:
+			hg.turtle.goto(x, y)
 		yield x
 
 
@@ -62,15 +68,17 @@ hg.contourX(cfg['xcon'])
 hg.contourY(cfg['ycon'])
 
 while True:
-	cere = input(">: f(x)=")
+	cere = input(">: f(x)=").lower()
 	if cere == '':
 		exit()
 	try:
 		func = eval("lambda x: " + cere, util.env)
-		if type(func(0)) == int:
+		if type(func(1)) == int:
+			for _ in draw(func): pass
+		elif type(func(1)) == float:
 			for _ in draw(func): pass
 		else:
-			raise TypeError("함수의 값은 정수여야 합니다.")
+			raise TypeError("함수의 값은 유리수로 정해져야합니다.")
 	except SyntaxError as e:
 		util.errorPrint(c, '수식 문법 오류가 있습니다.', e)
 	except NameError as e:
@@ -83,4 +91,3 @@ while True:
 		util.errorPrint(c, '입력된 숫자가 너무 큽니다.', e)
 	except Exception as e:
 		util.errorPrint(c, '알 수 없는 오류가 발생했습니다.', e)
-		

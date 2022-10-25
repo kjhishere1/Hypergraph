@@ -104,12 +104,18 @@ class Hypergraph:
 	def _drawFunc(self):
 		self._move(self.xMax, self.function(int(self.xMax)))
 		for x in self.xList:
-			y = self.function(x)
-			self.turtle.goto(x, y)
-			yield x
+			try:
+				y = self.function(x)
+			except ZeroDivisionError as e:
+				x = self.xList[self.xList.index(x) + 1]
+				y = self.function(x)
+				self._move(x, y)
+			else:
+				self.turtle.goto(x, y)
+			yield x, y
 
 	def Graph(self):
-		for _, _ in self._drawFunc():
+		for x, y in self._drawFunc():
 			pass
 
 if __name__ == '__main__':

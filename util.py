@@ -50,7 +50,7 @@ def GetCfgPath(cfg_path):
     else:
         os.mkdir(PATH)
         with open(CFG, 'w', encoding="UTF-8") as file:
-            file.write('{}')
+            file.write(r'{"noconf": 1}')
         return CFG
 
 
