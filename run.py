@@ -44,12 +44,6 @@ c.print(
 c.print('Ctrl + D를 눌러서 나가기', style="bold red")
 
 
-def draw(func):
-    global hg
-    hg.function = func
-    hg._drawFunc(track)
-
-
 hg = HG(cfg['size']['width'], cfg['size']['height'], None, cfg['step'])
 if cfg['origin']:
     hg.originMark()
@@ -60,18 +54,17 @@ if cfg['yaxis']:
 hg.contourX(cfg['xcon'])
 hg.contourY(cfg['ycon'])
 
+
 while True:
     cere = input(">: f(x)=").lower()
     if cere == '':
         exit()
     try:
         func = eval(hg.Parse("lambda x: " + cere), util.env)
-        ranX = random.random()
-        if type(func(ranX)) == int:
-            for _ in draw(func):
-                pass
-        elif type(func(ranX)) == float:
-            for _ in draw(func):
+        ranX = random.randint(0, cfg['size']['width'])
+        if type(func(ranX)) in [int, float]:
+            hg.function = func
+            for x, y in hg._drawFunc(track):
                 pass
         else:
             raise TypeError("함수의 값은 유리수로 정해져야합니다.")
