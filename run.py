@@ -65,7 +65,7 @@ while True:
     if cere == '':
         exit()
     try:
-        func = eval("lambda x: " + cere, util.env)
+        func = eval(hg.Parse("lambda x: " + cere), util.env)
         ranX = random.random()
         if type(func(ranX)) == int:
             for _ in draw(func):
