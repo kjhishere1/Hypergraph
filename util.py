@@ -61,7 +61,7 @@ def CfgChecker(cfg_path):
 
     for key in cfg.keys():
         value = cfg[key]
-        if len(cfg.keys()) != 7:
+        if len(cfg.keys()) != 8:
             raise ValueError("설정 파일의 값에 문제가 생겼습니다.")
 
         if key == "size":
@@ -79,6 +79,8 @@ def CfgChecker(cfg_path):
             assert TypeCheck(value, int) is True, "ycon값이 정수가 아닙니다."
         elif key == "step":
             assert TypeCheck(value, int) is True, "step값이 정수가 아닙니다."
+        elif key == "ratio":
+            assert TypeCheck(value, int) is True, "ratio값이 정수가 아닙니다."
         else:
             raise TypeError("정의되지 않은 값입니다.")
     return True
@@ -109,6 +111,9 @@ def GenCfg(cfg_path):
     if (step := input('X의 정의역을 몇의 배수로 설정 하시겠습니까?\n(기본값: 3) >: ')) == '':
         print("기본값으로 설정합니다.")
         step = 3
+    if (ratio := input('픽셀과 숫자의 비율을 몇으로 설정하시겠습니까?\n(기본값: 1:[25px]) >: ')) == '':
+        print("기본값으로 설정합니다.")
+        ratio = 25
 
     cfg = {}
     cfg["size"] = {
@@ -136,6 +141,7 @@ def GenCfg(cfg_path):
         cfg["ycon"] = 200
 
     cfg["step"] = step if TypeCheck(step, int) else 3
+    cfg["ratio"] = ratio if TypeCheck(ratio, int) else 25
 
     cfg = json.dumps(cfg)
 

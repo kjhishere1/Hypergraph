@@ -29,7 +29,7 @@ c = Console()
 c.print(util.logo_c, justify="center")
 c.print(
     util.makeTable(
-        ["평면 크기", "원점", "X축", "Y축", "X축 눈금", "Y축 눈금", "X값 증가량"],
+        ["평면 크기", "원점", "X축", "Y축", "X축 눈금", "Y축 눈금", "X값 증가량", "비율"],
         [
             f"{cfg['size']['width']}x{cfg['size']['height']}",
             "✅" if cfg['origin'] else "❌",
@@ -37,14 +37,15 @@ c.print(
             "✅" if cfg['yaxis'] else "❌",
             str(cfg['xcon']),
             str(cfg['ycon']),
-            str(cfg['step'])
+            str(cfg['step']),
+            f"1:{cfg['ratio']}px"
         ]
     )
 )
 c.print('Ctrl + D를 눌러서 나가기', style="bold red")
 
 
-hg = HG(cfg['size']['width'], cfg['size']['height'], None, cfg['step'])
+hg = HG(cfg['size']['width'], cfg['size']['height'], None, cfg['ratio'], cfg['step'])
 if cfg['origin']:
     hg.originMark()
 if cfg['xaxis']:

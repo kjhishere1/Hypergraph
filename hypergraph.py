@@ -1,13 +1,16 @@
 import re
-
 import turtle
+import decimal
+
 from turtle import Turtle, Screen
+from tkinter import TclError
 
 
 class Hypergraph:
-    def __init__(self, width, height, function, step):
+    def __init__(self, width, height, function, ratio=1, step=3):
         self.function = function
         self.step = step
+        self.ratio = ratio
 
         self.width = width
         self.height = height
@@ -18,7 +21,8 @@ class Hypergraph:
         self.yMin = (height/2)*-1
 
         self.xList = Hypergraph._BetterRange(
-            int(self.xMax), int(self.xMin), self.step)
+            int(self.xMax), int(self.xMin), self.step
+        )
 
         self.screen = self._screenSetup()
         self.turtle = self._turtleSetup()
@@ -125,7 +129,11 @@ class Hypergraph:
                 y = self.function(x)
                 self._move(x, y)
             else:
-                self.turtle.goto(x, y)
+                try:
+                    if type(y) != complex:
+                        self.turtle.goto(x, y)
+                except TclError:
+                    pass
             yield x, y
 
     def Graph(self):
