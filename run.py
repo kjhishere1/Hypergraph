@@ -61,7 +61,6 @@ while True:
     if cere == '':
         exit()
     try:
-        print(hg.Parse("lambda x: " + cere))
         func = eval(hg.Parse("lambda x: " + cere), util.env)
         ranX = random.randint(0, cfg['size']['width'])
         if type(func(ranX)) in [int, float, complex]:

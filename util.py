@@ -117,8 +117,8 @@ def GenCfg(cfg_path):
 
     cfg = {}
     cfg["size"] = {
-        "width": width if TypeCheck(width, int) else 512,
-        "height": height if TypeCheck(height, int) else 512
+        "width": int(width) if TypeCheck(width, int) else 512,
+        "height": int(height) if TypeCheck(height, int) else 512
     }
     cfg["origin"] = True if origin == 'Y' else False
     cfg["xaxis"] = True if xaxis == 'Y' else False
@@ -140,8 +140,8 @@ def GenCfg(cfg_path):
     else:
         cfg["ycon"] = 200
 
-    cfg["step"] = step if TypeCheck(step, int) else 3
-    cfg["ratio"] = ratio if TypeCheck(ratio, int) else 25
+    cfg["step"] = int(step) if TypeCheck(step, int) else 3
+    cfg["ratio"] = int(ratio) if TypeCheck(ratio, int) else 25
 
     cfg = json.dumps(cfg)
 
