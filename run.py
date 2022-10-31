@@ -61,14 +61,15 @@ while True:
     if cere == '':
         exit()
     try:
+        print(hg.Parse("lambda x: " + cere))
         func = eval(hg.Parse("lambda x: " + cere), util.env)
         ranX = random.randint(0, cfg['size']['width'])
-        if type(func(ranX)) in [int, float]:
+        if type(func(ranX)) in [int, float, complex]:
             hg.function = func
             for x, y in hg._drawFunc(track):
                 pass
         else:
-            raise TypeError("함수의 값은 유리수로 정해져야합니다.")
+            raise TypeError("함수의 값은 유리수여야합니다.")
     except SyntaxError as e:
         util.errorPrint(c, '수식 문법 오류가 있습니다.', e)
     except NameError as e:

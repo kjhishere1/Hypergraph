@@ -125,13 +125,28 @@ class Hypergraph:
             try:
                 y = self.function(x)
             except ZeroDivisionError as e:
+                if y > 0:
+                    self.turtle.goto(x, self.yMax)
+                else:
+                    self.turtle.goto(x, self.yMin)
+
                 x = self.xList[self.xList.index(x) + 1]
                 y = self.function(x)
                 self._move(x, y)
+
+                if y > 0:
+                    self.turtle.goto(x, self.yMax)
+                else:
+                    self.turtle.goto(x, self.yMin)
             else:
                 try:
                     if type(y) != complex:
-                        self.turtle.goto(x, y)
+                        if y > 0:
+                            if y <= (self.yMax + (self.yMax/2)):
+                                self.turtle.goto(x, y)
+                        else:
+                            if y >= (self.yMin + (self.yMin/2)):
+                                self.turtle.goto(x, y)
                 except TclError:
                     pass
             yield x, y
@@ -139,6 +154,7 @@ class Hypergraph:
     def Graph(self):
         for x, y in self._drawFunc():
             pass
+        self._move(0, 0)
 
 
 if __name__ == '__main__':
