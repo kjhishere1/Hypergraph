@@ -24,13 +24,19 @@ class Hypergraph:
             int(self.xMax), int(self.xMin), self.step
         )
 
+        self.IgnxList = Hypergraph._BetterRange(
+            int(self.xMax), int(self.xMin)
+        )
+
         self.screen = self._screenSetup()
         self.turtle = self._turtleSetup()
+
 
     def _screenSetup(self):
         screen = Screen()
         screen.setup(self.width, self.height)
         return screen
+
 
     def _turtleSetup(self):
         tu = Turtle()
@@ -38,22 +44,27 @@ class Hypergraph:
         tu.speed(0)
         return tu
 
+
     def _move(self, x, y):
         self.turtle.penup()
         self.turtle.goto(x, y)
         self.turtle.pendown()
 
+
     def originMark(self):
         self._move(-10, -15)
         self.turtle.write("O")
+
 
     def drawX(self):
         self._move(self.xMax, 0)
         self.turtle.goto(self.xMin, 0)
 
+
     def drawY(self):
         self._move(0, self.yMax)
         self.turtle.goto(0, self.yMin)
+
 
     def contourX(self, grad):
         if grad <= 0:
@@ -79,6 +90,7 @@ class Hypergraph:
             self._move(backX-8, -20)
             self.turtle.write(backX)
 
+
     def contourY(self, grad):
         if grad <= 0:
             return None
@@ -102,13 +114,109 @@ class Hypergraph:
             self._move(10, backY-8)
             self.turtle.write(backY)
 
+
+    def _XtoY(self, x):
+        y = self.function(x)
+        y = round(y.real, 10)
+        return y
+
+
+    def _NextX(self, x):
+        try:
+            next = self.xList[self.xList.index(x) + 1]
+        except IndexError:
+            next = None
+        return next
+
+    def _NextIgnX(self, x):
+        next = self.IgnxList[self.IgnxList.index(x) + 1]
+        return next
+
+    def _IgnxList(self, x):
+        xList = []
+        for _ in range(self.step):
+            xList.append(x)
+            x = self._NextIgnX(x)
+        return xList
+
+
+    def Adjx(self, AdjX):
+        for x in self.xList:
+            if abs(x - AdjX) <= self.step:
+                if x-AdjX >= int(self.step/2):
+                    return self._NextX(x)
+                else:
+                    return self.xList.index(x)
+
+
+    def _drawFunc(self, track=lambda x: x):
+        self._move(self.xMax, self.function(int(self.xMax)))
+        for x in track(self.xList):
+            try:
+                y = self._XtoY(x)
+
+                try:
+                    for IgnX in self._IgnxList(x):
+                        self.function(IgnX)
+                except ZeroDivisionError as e:
+                    #IgnX = self.Adjx(IgnX)
+                    if y > 0:
+                        self.turtle.goto(IgnX, self.yMax)
+                    else:
+                        self.turtle.goto(IgnX, self.yMin)
+
+                    IgnX = self._NextX(self.Adjx(IgnX))
+                    Igny = self._XtoY(IgnX)
+                    self._move(IgnX, Igny)
+
+                    if y > 0:
+                        self.turtle.goto(IgnX, self.yMax)
+                    else:
+                        self.turtle.goto(IgnX, self.yMin)
+                except IndexError:
+                    pass
+
+            except ZeroDivisionError as e:
+                if y > 0:
+                    self.turtle.goto(x, self.yMax)
+                else:
+                    self.turtle.goto(x, self.yMin)
+
+                x = self._NextX(x)
+                y = self._XtoY(x)
+                self._move(x, y)
+
+                if y > 0:
+                    self.turtle.goto(x, self.yMax)
+                else:
+                        self.turtle.goto(x, self.yMin)
+            else:
+                try:
+                    if y > 0:
+                        if y <= (self.yMax + (self.yMax/2)):
+                            self.turtle.goto(x, y)
+                    else:
+                        if y >= (self.yMin + (self.yMin/2)):
+                            self.turtle.goto(x, y)
+                except TclError:
+                    pass
+
+            yield x, y
+
+    def Graph(self):
+        for x, y in self._drawFunc():
+            pass
+        self._move(0, 0)
+
+
     @staticmethod
     def _BetterRange(start, stop, step=1):
         rangeList = []
         rangeList = [*rangeList, *reversed(range(0, start, step))]
         rangeList = [*rangeList, *
-                     [i*-1 for i in list(range(0, stop*-1, step))]]
+        [i*-1 for i in list(range(0, stop*-1, step))]]
         return list(reversed(sorted(list(set(rangeList)))))
+
 
     @staticmethod
     def Parse(string: str):
@@ -119,52 +227,17 @@ class Hypergraph:
             string = string.replace(f'root({rt})', f"(({rt})**(1/2))")
         return string
 
-    def _drawFunc(self, track=lambda x: x):
-        self._move(self.xMax, self.function(int(self.xMax)))
-        for x in track(self.xList):
-            try:
-                y = self.function(x)
-            except ZeroDivisionError as e:
-                if y > 0:
-                    self.turtle.goto(x, self.yMax)
-                else:
-                    self.turtle.goto(x, self.yMin)
-
-                x = self.xList[self.xList.index(x) + 1]
-                y = self.function(x)
-                self._move(x, y)
-
-                if y > 0:
-                    self.turtle.goto(x, self.yMax)
-                else:
-                    self.turtle.goto(x, self.yMin)
-            else:
-                try:
-                    if type(y) != complex:
-                        if y > 0:
-                            if y <= (self.yMax + (self.yMax/2)):
-                                self.turtle.goto(x, y)
-                        else:
-                            if y >= (self.yMin + (self.yMin/2)):
-                                self.turtle.goto(x, y)
-                except TclError:
-                    pass
-            yield x, y
-
-    def Graph(self):
-        for x, y in self._drawFunc():
-            pass
-        self._move(0, 0)
-
 
 if __name__ == '__main__':
-    def func(x): return -1*(((1/10)*x)**2)
-    hg = Hypergraph(512, 512, func, 10)
+    #def func(x): return -1*(((1/10)*x)**2)
+    #func = eval(f"lambda x: {Hypergraph.Parse('(20/(x-200))-30')}")
+    func = eval(f"lambda x: {Hypergraph.Parse('-200/(x+100)')}")
+    hg = Hypergraph(512, 512, func, 1, 7)
     hg.originMark()
     hg.drawX()
     hg.drawY()
-    hg.contourX(30)
-    hg.contourY(30)
+    hg.contourX(0)
+    hg.contourY(0)
     hg.Graph()
 
     turtle.exitonclick()
