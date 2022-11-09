@@ -7,8 +7,7 @@ from tkinter import TclError
 
 
 class Hypergraph:
-    def __init__(self, width, height, function, ratio=1, step=3):
-        self.function = function
+    def __init__(self, width, height, ratio=1, step=3):
         self.step = step
         self.ratio = ratio
 
@@ -20,21 +19,18 @@ class Hypergraph:
         self.yMax = height/2
         self.yMin = (height/2)*-1
 
-        self.xList = Hypergraph._BetterRange(
-            int(self.xMax), int(self.xMin), self.step
-        )
 
-        self.IgnxList = Hypergraph._BetterRange(
+        self.xRange = Hypergraph._BetterRange(
             int(self.xMax), int(self.xMin)
         )
 
-        self.screen = self._screenSetup()
+        self.screen = self._screenSetup(width, height)
         self.turtle = self._turtleSetup()
 
 
-    def _screenSetup(self):
+    def _screenSetup(self, width, height):
         screen = Screen()
-        screen.setup(self.width, self.height)
+        screen.setup(width, height)
         return screen
 
 
@@ -115,42 +111,9 @@ class Hypergraph:
             self.turtle.write(backY)
 
 
-    def _XtoY(self, x):
-        y = self.function(x)
-        y = round(y.real, 10)
-        return y
 
-
-    def _NextX(self, x):
-        try:
-            next = self.xList[self.xList.index(x) + 1]
-        except IndexError:
-            next = None
-        return next
-
-    def _NextIgnX(self, x):
-        next = self.IgnxList[self.IgnxList.index(x) + 1]
-        return next
-
-    def _IgnxList(self, x):
-        xList = []
-        for _ in range(self.step):
-            xList.append(x)
-            x = self._NextIgnX(x)
-        return xList
-
-
-    def Adjx(self, AdjX):
-        for x in self.xList:
-            if abs(x - AdjX) <= self.step:
-                if x-AdjX >= int(self.step/2):
-                    return self._NextX(x)
-                else:
-                    return self.xList.index(x)
-
-
-    def _drawFunc(self, track=lambda x: x):
-        self._move(self.xMax, self.function(int(self.xMax)))
+    def _drawFunc(self, Function, track=lambda x: x):
+        self._move(self.xMax, Function(int(self.xMax)))
         for x in track(self.xList):
             try:
                 y = self._XtoY(x)
@@ -203,10 +166,9 @@ class Hypergraph:
 
             yield x, y
 
-    def Graph(self):
-        for x, y in self._drawFunc():
+    def Graph(self, Function):
+        for x, y in self._drawFunc(Function):
             pass
-        self._move(0, 0)
 
 
     @staticmethod
@@ -220,6 +182,11 @@ class Hypergraph:
 
     @staticmethod
     def Parse(string: str):
+        """
+        abs: (?<=\|)(.*?)(?=\|)
+        root: abs: (?<=root\()(.*?)(?=\))
+        """
+
         string = string.lower()
         string = string.replace("^", "**")
         roots = re.findall(r"root\((.+?)\)", string)
